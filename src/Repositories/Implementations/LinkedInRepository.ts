@@ -4,7 +4,6 @@ import { DataRepository } from "./DataRepository";
 import InfluencerProfile from "../../Entities/InfluencerProfile";
 import { Collection } from "mongodb";
 import BrandProfile from "../../Entities/BrandProfile";
-import { LinkedInProfile } from "../../Entities/LinkedInProfile";
 
 @injectable()
 export class LinkedInRepository {

@@ -23,7 +23,7 @@ export class InstagramRepository {
         this.brandProfileCollection = this.dataService.getDataCollection<BrandProfile>(this.brandProfileCollectionName);
     }
 
-    async createFacebookProfile(userData: InstagramProfile): Promise<any> {
+    async createInstagramProfile(userData: InstagramProfile): Promise<any> {
         var instagramProfileCollection = await this.getInstagramProfileCollection();
         const result = await instagramProfileCollection.insertOne(userData);
         return await result.insertedId;
@@ -70,7 +70,7 @@ export class InstagramRepository {
 
             const updateResult = await brandCollection.updateOne(
                 { brandId: userId },
-                { $push: { facebookProfiles: userProfile } });
+                { $push: { instagramProfiles: userProfile } });
 
             return updateResult.modifiedCount === 1 ? true : false;
         }

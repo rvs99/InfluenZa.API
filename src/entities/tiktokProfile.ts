@@ -1,5 +1,5 @@
-export interface TiktokProfile {
-    fbId: string
+export interface TikTokProfile {
+    ttId: string
     firstName: string;
     middleName: string;
     lastName: string;

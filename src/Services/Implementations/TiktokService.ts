@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createUser } from '../../Repositories/Implementations/UserRepository';
 import { User } from '../../Entities/UserAccount';
 import { ObjectId } from 'mongodb';
-import { TiktokProfile } from '../../Entities/TiktokProfile';
+import { TikTokProfile } from '../../Entities/TiktokProfile';
 
 const TIKTOK_GRAPH_API_BASE_URL = 'https://graph.tiktok.com';
 
@@ -17,8 +17,8 @@ export class FacebookService {
         });
 
         // Extract user data from the Facebook API response
-        const userFbData: TiktokProfile = {
-            fbId: response.data?.id,
+        const userFbData: TikTokProfile = {
+            ttId: response.data?.id,
             firstName: response.data?.first_name,
             lastName: response.data?.last_name,
             gender: response.data?.gender,
