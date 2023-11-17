@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { createUser } from '../repositories/userRepository';
-import {User} from '../entities/userAccount';
+import { createUser } from '../../Repositories/Implementations/UserRepository';
+import { User } from '../../Entities/UserAccount';
 import { ObjectId } from 'mongodb';
-import { InstagramProfile } from '../entities/instagramProfile';
+import { TwitterProfile } from '../../Entities/TwitterProfile';
 
-const INSTAGRAM_GRAPH_API_BASE_URL = 'https://graph.instagram.com';
+const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.twitter.com';
 
-export class InstagramService {
+export class TwitterService {
     async fetchUserAndSave(token: string): Promise<any> {
-        const response = await axios.get(`${INSTAGRAM_GRAPH_API_BASE_URL}/me`, {
+        const response = await axios.get(`${FACEBOOK_GRAPH_API_BASE_URL}/me`, {
             params: {
                 access_token: token,
                 fields:
@@ -17,7 +17,7 @@ export class InstagramService {
         });
 
         // Extract user data from the Facebook API response
-        const userFbData: InstagramProfile = {
+        const userFbData: TwitterProfile = {
             fbId: response.data?.id,
             firstName: response.data?.first_name,
             lastName: response.data?.last_name,
@@ -40,7 +40,7 @@ export class InstagramService {
             name: response.data?.first_name,
             password: '',
             email: response.data?.email,
-            signedUpMethod: 'instagram',
+            signedUpMethod: 'twitter',
             facebookProfiles: [userFbData],
             instagramProfiles: [],
             twitterProfiles: [],
@@ -49,7 +49,7 @@ export class InstagramService {
 
         // Create a new user entity using the extracted user data
         const userId: ObjectId = await createUser(userData);
-            
+
         return userId;
     }
 }

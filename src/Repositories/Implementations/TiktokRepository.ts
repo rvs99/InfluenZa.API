@@ -1,6 +1,6 @@
 import { Collection } from 'mongodb';
-import { TiktokProfile } from '../entities/tiktokProfile';
-import { getCollection } from './mongodbUtils';
+import { TiktokProfile } from '../../Entities/TiktokProfile';
+import { getCollection } from './ConnectionPoolManager';
 
 const collectionName = 'tiktokProfiles';
 

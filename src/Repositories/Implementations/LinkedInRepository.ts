@@ -1,5 +1,5 @@
-import { LinkedInProfile } from '../entities/linkedInProfile';
-import { getCollection } from './mongodbUtils';
+import { LinkedInProfile } from '../../Entities/LinkedInProfile';
+import { getCollection } from './ConnectionPoolManager';
 
 const collectionName = 'linkedinProfiles'; // Replace with the name of the collection for LinkedIn profiles
 

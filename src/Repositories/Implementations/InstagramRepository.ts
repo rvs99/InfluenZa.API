@@ -1,5 +1,5 @@
-import { getCollection } from './mongodbUtils';
-import { InstagramProfile } from '../entities/instagramProfile';
+import { getCollection } from './ConnectionPoolManager';
+import { InstagramProfile } from '../../Entities/InstagramProfile';
 
 
 const collectionName = 'instagramProfiles';

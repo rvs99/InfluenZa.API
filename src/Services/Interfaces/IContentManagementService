@@ -1,0 +1,17 @@
+import { Content } from "../../entities/content";
+
+interface IContentManagementService {
+    createContent(newContent: Content): Promise<string>;
+    approveContent(contentId: string): Promise<Content>;
+    requestChangesByEditor(contentId: string): Promise<void>;
+    makeCorrections(contentId: string, corrections: string): Promise<void>;
+    reReviewByEditor(contentId: string): Promise<void>;
+    requestChangesByReviewer(contentId: string): Promise<void>;
+    finalApproval(contentId: string): Promise<void>;
+    publishContent(contentId: string): Promise<void>;
+    archiveContent(contentId: string): Promise<void>;
+    submitForReview(contentId: string): Promise<void>;
+    moveToNextState(contentId: string): Promise<void>;
+}
+
+export default IContentManagementService;

@@ -1,5 +1,5 @@
-import { getCollection } from './mongodbUtils';
-import { TwitterProfile } from '../entities/twitterProfile';
+import { getCollection } from './ConnectionPoolManager';
+import { TwitterProfile } from '../../Entities/TwitterProfile';
 
 const collectionName = 'twitterProfiles';
 

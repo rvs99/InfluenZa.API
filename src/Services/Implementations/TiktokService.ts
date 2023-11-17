@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { createUser } from '../repositories/userRepository';
-import {User} from '../entities/userAccount';
+import { createUser } from '../../Repositories/Implementations/UserRepository';
+import { User } from '../../Entities/UserAccount';
 import { ObjectId } from 'mongodb';
-import { LinkedInProfile } from '../entities/linkedInProfile';
+import { TiktokProfile } from '../../Entities/TiktokProfile';
 
-const LINKEDIN_GRAPH_API_BASE_URL = 'https://graph.linkedin.com';
+const TIKTOK_GRAPH_API_BASE_URL = 'https://graph.tiktok.com';
 
 export class FacebookService {
     async fetchUserAndSave(token: string): Promise<any> {
-        const response = await axios.get(`${LINKEDIN_GRAPH_API_BASE_URL}/me`, {
+        const response = await axios.get(`${TIKTOK_GRAPH_API_BASE_URL}/me`, {
             params: {
                 access_token: token,
                 fields:
@@ -17,7 +17,7 @@ export class FacebookService {
         });
 
         // Extract user data from the Facebook API response
-        const userFbData: LinkedInProfile = {
+        const userFbData: TiktokProfile = {
             fbId: response.data?.id,
             firstName: response.data?.first_name,
             lastName: response.data?.last_name,
@@ -40,7 +40,7 @@ export class FacebookService {
             name: response.data?.first_name,
             password: '',
             email: response.data?.email,
-            signedUpMethod: 'linkedIn',
+            signedUpMethod: 'tiktok',
             facebookProfiles: [userFbData],
             instagramProfiles: [],
             twitterProfiles: [],
@@ -49,7 +49,7 @@ export class FacebookService {
 
         // Create a new user entity using the extracted user data
         const userId: ObjectId = await createUser(userData);
-            
+
         return userId;
     }
 }
