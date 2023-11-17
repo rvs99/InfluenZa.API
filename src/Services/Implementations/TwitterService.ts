@@ -18,7 +18,7 @@ export class TwitterService {
 
         // Extract user data from the Facebook API response
         const userFbData: TwitterProfile = {
-            fbId: response.data?.id,
+            twitterId: response.data?.id,
             firstName: response.data?.first_name,
             lastName: response.data?.last_name,
             gender: response.data?.gender,
