@@ -1,5 +1,5 @@
 export interface LinkedInProfile {
-    fbId: string
+    linkedInId: string
     firstName: string;
     middleName: string;
     lastName: string;
