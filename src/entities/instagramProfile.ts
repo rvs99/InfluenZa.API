@@ -1,5 +1,6 @@
 export interface InstagramProfile {
-    fbId: string
+    instaId: string;
+    instaHandle: string;
     firstName: string;
     middleName: string;
     lastName: string;

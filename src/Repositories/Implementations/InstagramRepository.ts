@@ -33,7 +33,7 @@ export class InstagramRepository {
 
         if (role == "Influencer") {
             const influencerCollection = await this.getInfluencerCollection();
-            const exist = await influencerCollection.findOne({ fbId: userProfile.fbId });
+            const exist = await influencerCollection.findOne({ fbId: userProfile.instaId });
 
             if (exist != null) {
                 throw Error("Instagram profile already attached");
@@ -51,7 +51,7 @@ export class InstagramRepository {
             const pipeline = [
                 {
                     $match: {
-                        'instagramProfiles.fbId': userProfile.fbId
+                        'instagramProfiles.fbId': userProfile.instaId
                     }
                 },
                 {
