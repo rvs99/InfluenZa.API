@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { UserAccount } from '../../Entities/UserAccount';
 import { FacebookProfile } from '../../Entities/FacebookProfile';
 import { ObjectId } from 'mongodb';
-import { facebookRepository } from '../../Repositories/Implementations/FacebookRepository';
+import { FacebookRepository } from '../../Repositories/Implementations/FacebookRepository';
 import { injectable } from 'tsyringe';
 
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com';
@@ -10,7 +10,7 @@ const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com';
 @injectable()
 export class FacebookService {
 
-    constructor(private readonly facebookRepo: facebookRepository) { }
+    constructor(private readonly facebookRepo: FacebookRepository) { }
 
     async connectProfile(userId: string, role: string, token: string): Promise<boolean> {
 

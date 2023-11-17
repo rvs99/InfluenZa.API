@@ -2,10 +2,9 @@ import { injectable } from "tsyringe";
 import { ContentRepository } from "../../Repositories/Implementations/ContentRepository";
 import { Content } from "../../Entities/Content";
 import ContentState from "../../Entities/ContentState";
-import { IContentManagementService } from "../interfaces/IContentManagementService";
 
 @injectable()
-export class ContentManagementService extends IContentManagementService {
+export class ContentManagementService {
 
     constructor(private readonly contentRepo: ContentRepository) { }
 

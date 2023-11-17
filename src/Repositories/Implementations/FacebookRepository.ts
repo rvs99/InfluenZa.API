@@ -1,33 +1,33 @@
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { FacebookProfile } from "../../Entities/FacebookProfile";
 import { DataRepository } from "./DataRepository";
-import influencerProfile from "../../Entities/InfluencerProfile";
+import InfluencerProfile from "../../Entities/InfluencerProfile";
 import { Collection } from "mongodb";
-import brandProfile from "../../Entities/BrandProfile";
+import BrandProfile from "../../Entities/BrandProfile";
 
 @injectable()
-export class facebookRepository {
+export class FacebookRepository {
 
     private influencerCollectionName = 'InfluencerProfiles';
     private facebookProfileCollectionName = 'FacebookProfiles';
     private brandProfileCollectionName = 'BrandProfiles';
     private dataService: DataRepository;
     private facebookProfileCollection: Promise<Collection<FacebookProfile>>;
-    private influencerProfileCollection: Promise<Collection<influencerProfile>>;
-    private brandProfileCollection: Promise<Collection<brandProfile>>;
+    private influencerProfileCollection: Promise<Collection<InfluencerProfile>>;
+    private brandProfileCollection: Promise<Collection<BrandProfile>>;
 
-    constructor() {
-        this.dataService = new DataRepository();
+    constructor(@inject('DataRepository') dataService: DataRepository) {
+        this.dataService = dataService;
         this.facebookProfileCollection = this.dataService.getDataCollection<FacebookProfile>(this.facebookProfileCollectionName);
-        this.influencerProfileCollection = this.dataService.getDataCollection<influencerProfile>(this.influencerCollectionName);
-        this.brandProfileCollection = this.dataService.getDataCollection<brandProfile>(this.brandProfileCollectionName);
+        this.influencerProfileCollection = this.dataService.getDataCollection<InfluencerProfile>(this.influencerCollectionName);
+        this.brandProfileCollection = this.dataService.getDataCollection<BrandProfile>(this.brandProfileCollectionName);
     }
 
-    private async getInfluencerCollection(): Promise<Collection<influencerProfile>> {
+    private async getInfluencerCollection(): Promise<Collection<InfluencerProfile>> {
         return await this.influencerProfileCollection;
     }
 
-    private async getBrandCollection(): Promise<Collection<brandProfile>> {
+    private async getBrandCollection(): Promise<Collection<BrandProfile>> {
         return await this.brandProfileCollection;
     }
 

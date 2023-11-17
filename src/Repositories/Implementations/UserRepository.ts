@@ -2,7 +2,7 @@ import { Collection, ObjectId } from 'mongodb';
 import { UserAccount } from '../../Entities/UserAccount';
 import { injectable } from 'tsyringe';
 import influencerProfile from '../../Entities/InfluencerProfile';
-import brandProfile from '../../Entities/BrandProfile';
+import BrandProfile from '../../Entities/BrandProfile';
 import { FacebookProfile } from '../../Entities/FacebookProfile';
 
 import ConnectionPoolManager from './ConnectionPoolManager'
@@ -13,14 +13,14 @@ export class UserRepository {
 
     private userAccountCollectionPromise: Promise<Collection<UserAccount>>;
     private influencerCollectionPromise: Promise<Collection<influencerProfile>>;
-    private brandCollectionPromise: Promise<Collection<brandProfile>>;
+    private brandCollectionPromise: Promise<Collection<BrandProfile>>;
     private dataService: DataRepository;
 
     constructor() {
         this.dataService = new DataRepository();
         this.userAccountCollectionPromise = this.dataService.getDataCollection<UserAccount>('userAccounts');
         this.influencerCollectionPromise = this.dataService.getDataCollection<influencerProfile>('influencerProfiles');
-        this.brandCollectionPromise = this.dataService.getDataCollection<brandProfile>('brandProfiles');
+        this.brandCollectionPromise = this.dataService.getDataCollection<BrandProfile>('brandProfiles');
     }
 
     private async getUserCollection(): Promise<Collection<UserAccount>> {
@@ -31,7 +31,7 @@ export class UserRepository {
         return await this.influencerCollectionPromise;
     }
 
-    private async getBrandCollection(): Promise<Collection<brandProfile>> {
+    private async getBrandCollection(): Promise<Collection<BrandProfile>> {
         return await this.brandCollectionPromise;
     }
 
@@ -86,9 +86,10 @@ export class UserRepository {
             else if (role = 'Brand') {
                 const brandCollection = await this.getBrandCollection();
 
-                const brandProfile: brandProfile = {
+                const brandProfile: BrandProfile = {
                     brandId: userId,
                     name: facebookProfile.firstName + " " + facebookProfile.lastName,
+                    innfluenzaHandle: '',
                     description: '',
                     contact_no: '',
                     address: '',
