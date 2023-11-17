@@ -1,10 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { FacebookProfile } from './FacebookProfile';
 import { InstagramProfile } from './InstagramProfile';
 import { TwitterProfile } from './TwitterProfile';
-import { TiktokProfile } from './TiktokProfile';
+import { TikTokProfile } from './TikTokProfile';
 
-export interface brandProfile {
+export interface BrandProfile {
     brandId: string;
     innfluenzaHandle: string,
     name: string;
@@ -17,7 +16,7 @@ export interface brandProfile {
     facebookProfiles: FacebookProfile[];
     instagramProfiles: InstagramProfile[];
     twitterProfiles: TwitterProfile[];
-    tiktokProfiles: TiktokProfile[];
+    tiktokProfiles: TikTokProfile[];
 }
 
-export default brandProfile;
+export default BrandProfile;

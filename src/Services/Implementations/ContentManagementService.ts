@@ -8,11 +8,11 @@ export class ContentManagementService {
 
     constructor(private readonly contentRepo: ContentRepository) { }
 
-    async createContent(newContent: Content) {
+    async createContent(userId: string, newContent: Content) {
         try {
 
             newContent.state = ContentState.DraftCreation;
-            newContent.author = req['loggedInUser'].userId;
+            newContent.author = userId;
 
             newContent.createdAt = new Date(Date.now());
             newContent.state = ContentState.DraftCreation;

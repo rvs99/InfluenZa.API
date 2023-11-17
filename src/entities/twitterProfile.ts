@@ -1,5 +1,5 @@
 export interface TwitterProfile {
-    fbId: string
+    twitterId: string
     firstName: string;
     middleName: string;
     lastName: string;

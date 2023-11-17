@@ -1,55 +1,90 @@
-import axios from 'axios';
-import { createUser } from '../../Repositories/Implementations/UserRepository';
-import { User } from '../../Entities/UserAccount';
-import { ObjectId } from 'mongodb';
-import { LinkedInProfile } from '../../Entities/LinkedInProfile';
+import { inject, injectable } from "tsyringe";
+import { LinkedInProfile } from "../../Entities/LinkedInProfile";
+import { DataRepository } from "../../Repositories/Implementations/DataRepository";
+import InfluencerProfile from "../../Entities/InfluencerProfile";
+import { Collection } from "mongodb";
+import BrandProfile from "../../Entities/BrandProfile";
 
-const LINKEDIN_GRAPH_API_BASE_URL = 'https://graph.linkedin.com';
+@injectable()
+export class LinkedInRepository {
 
-export class LinkedInService {
-    async fetchUserAndSave(token: string): Promise<any> {
-        const response = await axios.get(`${LINKEDIN_GRAPH_API_BASE_URL}/me`, {
-            params: {
-                access_token: token,
-                fields:
-                    'id,first_name,middle_name,last_name,gender,age_range,birthday,email,link,location,about,languages,political,website,picture,short_name',
-            },
-        });
+    private influencerCollectionName = 'InfluencerProfiles';
+    private linkedInProfileCollectionName = 'LinkedInProfiles';
+    private brandProfileCollectionName = 'BrandProfiles';
+    private dataService: DataRepository;
+    private linkedInProfileCollection: Promise<Collection<LinkedInProfile>>;
+    private influencerProfileCollection: Promise<Collection<InfluencerProfile>>;
+    private brandProfileCollection: Promise<Collection<BrandProfile>>;
 
-        // Extract user data from the Facebook API response
-        const userFbData: LinkedInProfile = {
-            linkedInId: response.data?.id,
-            firstName: response.data?.first_name,
-            lastName: response.data?.last_name,
-            gender: response.data?.gender,
-            birthday: new Date(response.data?.birthday),
-            email: response.data?.email,
-            profileLink: response.data?.link,
-            location: response.data?.location?.name,
-            languages: response.data?.languages?.map((lang: { id: string; name: string; }) => lang.name) || [],
-            profilePicture: response.data?.picture?.data?.url,
-            shortName: response.data?.short_name,
-            middleName: response.data?.middle_name,
-            about: response.data?.about,
-            political: response.data?.political,
-            website: response.data?.website
-        };
+    constructor(@inject('DataRepository') dataService: DataRepository) {
+        this.dataService = dataService;
+        this.linkedInProfileCollection = this.dataService.getDataCollection<LinkedInProfile>(this.linkedInProfileCollectionName);
+        this.influencerProfileCollection = this.dataService.getDataCollection<InfluencerProfile>(this.influencerCollectionName);
+        this.brandProfileCollection = this.dataService.getDataCollection<BrandProfile>(this.brandProfileCollectionName);
+    }
 
-        const userData: User = {
-            id: new ObjectId(),
-            name: response.data?.first_name,
-            password: '',
-            email: response.data?.email,
-            signedUpMethod: 'linkedIn',
-            facebookProfiles: [userFbData],
-            instagramProfiles: [],
-            twitterProfiles: [],
-            tiktokProfiles: []
-        };
+    private async getInfluencerCollection(): Promise<Collection<InfluencerProfile>> {
+        return await this.influencerProfileCollection;
+    }
 
-        // Create a new user entity using the extracted user data
-        const userId: ObjectId = await createUser(userData);
+    private async getBrandCollection(): Promise<Collection<BrandProfile>> {
+        return await this.brandProfileCollection;
+    }
 
-        return userId;
+    private async getLinkedInProfileCollection(): Promise<Collection<LinkedInProfile>> {
+        return await this.linkedInProfileCollection;
+    }
+
+    async createLinkedInProfile(userData: LinkedInProfile): Promise<any> {
+        const linkedInProfileCollection = await this.getLinkedInProfileCollection();
+        const result = await linkedInProfileCollection.insertOne(userData);
+        return await result.insertedId;
+    }
+
+    async connectProfile(userId: string, role: string, userProfile: LinkedInProfile): Promise<boolean> {
+
+        if (role == "Influencer") {
+            const influencerCollection = await this.getInfluencerCollection();
+            const exist = await influencerCollection.findOne({ linkedInId: userProfile.linkedInId });
+
+            if (exist != null) {
+                throw Error("linkedIn profile already attached");
+            }
+
+            const updateResult = await influencerCollection.updateOne(
+                { influencerId: userId },
+                { $push: { linkedInProfiles: userProfile } });
+
+            return updateResult.modifiedCount === 1 ? true : false;
+        }
+        else if (role == "Brand") {
+            const brandCollection = await this.getBrandCollection();
+
+            const pipeline = [
+                {
+                    $match: {
+                        'linkedInProfiles.linkedInId': userProfile.linkedInId
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        linkedInProfiles: 1
+                    }
+                }
+            ];
+
+            const exist = await brandCollection.aggregate(pipeline).toArray();
+
+            if (exist != null) {
+                throw Error("linkedIn profile already attached");
+            }
+
+            const updateResult = await brandCollection.updateOne(
+                { brandId: userId },
+                { $push: { linkedInProfiles: userProfile } });
+
+            return updateResult.modifiedCount === 1 ? true : false;
+        }
     }
 }

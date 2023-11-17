@@ -35,7 +35,7 @@ export class UserRepository {
         return await this.brandCollectionPromise;
     }
 
-    async createUser(facebookProfile: FacebookProfile, role: string): Promise<{ id?: string; status: string }> {
+    public async createUser(facebookProfile: FacebookProfile, role: string): Promise<{ id?: string; status: string }> {
 
         const userAccountCollection = await this.getUserCollection();
         const existingUser = await userAccountCollection.findOne<UserAccount>({ emailId: facebookProfile.email });

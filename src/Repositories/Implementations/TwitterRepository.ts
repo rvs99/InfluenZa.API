@@ -1,24 +1,24 @@
 import { inject, injectable } from "tsyringe";
-import { LinkedInProfile } from "../../Entities/LinkedInProfile";
+import { TwitterProfile } from "../../Entities/TwitterProfile";
 import { DataRepository } from "./DataRepository";
 import InfluencerProfile from "../../Entities/InfluencerProfile";
 import { Collection } from "mongodb";
 import BrandProfile from "../../Entities/BrandProfile";
 
 @injectable()
-export class LinkedInRepository {
+export class TwitterRepository {
 
     private influencerCollectionName = 'InfluencerProfiles';
-    private linkedInProfileCollectionName = 'LinkedInProfiles';
+    private twitterProfileCollectionName = 'TwitterProfiles';
     private brandProfileCollectionName = 'BrandProfiles';
     private dataService: DataRepository;
-    private linkedInProfileCollection: Promise<Collection<LinkedInProfile>>;
+    private twitterProfileCollection: Promise<Collection<TwitterProfile>>;
     private influencerProfileCollection: Promise<Collection<InfluencerProfile>>;
     private brandProfileCollection: Promise<Collection<BrandProfile>>;
 
     constructor(@inject('DataRepository') dataService: DataRepository) {
         this.dataService = dataService;
-        this.linkedInProfileCollection = this.dataService.getDataCollection<LinkedInProfile>(this.linkedInProfileCollectionName);
+        this.twitterProfileCollection = this.dataService.getDataCollection<TwitterProfile>(this.twitterProfileCollectionName);
         this.influencerProfileCollection = this.dataService.getDataCollection<InfluencerProfile>(this.influencerCollectionName);
         this.brandProfileCollection = this.dataService.getDataCollection<BrandProfile>(this.brandProfileCollectionName);
     }
@@ -31,29 +31,29 @@ export class LinkedInRepository {
         return await this.brandProfileCollection;
     }
 
-    private async getLinkedInProfileCollection(): Promise<Collection<LinkedInProfile>> {
-        return await this.linkedInProfileCollection;
+    private async getTwitterProfileCollection(): Promise<Collection<TwitterProfile>> {
+        return await this.twitterProfileCollection;
     }
 
-    async createLinkedInProfile(userData: LinkedInProfile): Promise<any> {
-        const linkedInProfileCollection = await this.getLinkedInProfileCollection();
-        const result = await linkedInProfileCollection.insertOne(userData);
+    async createTwitterProfile(userData: TwitterProfile): Promise<any> {
+        const twitterProfileCollection = await this.getTwitterProfileCollection();
+        const result = await twitterProfileCollection.insertOne(userData);
         return await result.insertedId;
     }
 
-    async connectProfile(userId: string, role: string, userProfile: LinkedInProfile): Promise<boolean> {
+    async connectProfile(userId: string, role: string, userProfile: TwitterProfile): Promise<boolean> {
 
         if (role == "Influencer") {
             const influencerCollection = await this.getInfluencerCollection();
-            const exist = await influencerCollection.findOne({ fbId: userProfile.linkedInId });
+            const exist = await influencerCollection.findOne({ twitterId: userProfile.twitterId });
 
             if (exist != null) {
-                throw Error("LinkedIn profile already attached");
+                throw Error("twitter profile already attached");
             }
 
             const updateResult = await influencerCollection.updateOne(
                 { influencerId: userId },
-                { $push: { linkedInProfiles: userProfile } });
+                { $push: { twitterProfiles: userProfile } });
 
             return updateResult.modifiedCount === 1 ? true : false;
         }
@@ -63,13 +63,13 @@ export class LinkedInRepository {
             const pipeline = [
                 {
                     $match: {
-                        'linkedInProfiles.linkedInId': userProfile.linkedInId
+                        'twitterProfiles.twitterId': userProfile.twitterId
                     }
                 },
                 {
                     $project: {
                         _id: 0,
-                        linkedInProfiles: 1
+                        twitterProfiles: 1
                     }
                 }
             ];
@@ -77,12 +77,12 @@ export class LinkedInRepository {
             const exist = await brandCollection.aggregate(pipeline).toArray();
 
             if (exist != null) {
-                throw Error("LinkedIn profile already attached");
+                throw Error("twitter profile already attached");
             }
 
             const updateResult = await brandCollection.updateOne(
                 { brandId: userId },
-                { $push: { linkedInProfiles: userProfile } });
+                { $push: { twitterProfiles: userProfile } });
 
             return updateResult.modifiedCount === 1 ? true : false;
         }

@@ -1,55 +1,93 @@
-import axios from 'axios';
-import { createUser } from '../../Repositories/Implementations/UserRepository';
-import { User } from '../../Entities/UserAccount';
-import { ObjectId } from 'mongodb';
+import axios, { AxiosResponse } from 'axios';
+import { UserAccount } from '../../Entities/UserAccount';
 import { TwitterProfile } from '../../Entities/TwitterProfile';
+import { ObjectId } from 'mongodb';
+import { TwitterRepository } from '../../Repositories/Implementations/TwitterRepository';
+import { injectable } from 'tsyringe';
 
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.twitter.com';
 
+@injectable()
 export class TwitterService {
-    async fetchUserAndSave(token: string): Promise<any> {
-        const response = await axios.get(`${FACEBOOK_GRAPH_API_BASE_URL}/me`, {
-            params: {
-                access_token: token,
-                fields:
-                    'id,first_name,middle_name,last_name,gender,age_range,birthday,email,link,location,about,languages,political,website,picture,short_name',
-            },
-        });
 
-        // Extract user data from the Facebook API response
-        const userFbData: TwitterProfile = {
-            fbId: response.data?.id,
-            firstName: response.data?.first_name,
-            lastName: response.data?.last_name,
-            gender: response.data?.gender,
-            birthday: new Date(response.data?.birthday),
-            email: response.data?.email,
-            profileLink: response.data?.link,
-            location: response.data?.location?.name,
-            languages: response.data?.languages?.map((lang: { id: string; name: string; }) => lang.name) || [],
-            profilePicture: response.data?.picture?.data?.url,
-            shortName: response.data?.short_name,
-            middleName: response.data?.middle_name,
-            about: response.data?.about,
-            political: response.data?.political,
-            website: response.data?.website
-        };
+    constructor(private readonly twitterRepo: TwitterRepository) { }
 
-        const userData: User = {
-            id: new ObjectId(),
-            name: response.data?.first_name,
-            password: '',
-            email: response.data?.email,
-            signedUpMethod: 'twitter',
-            facebookProfiles: [userFbData],
-            instagramProfiles: [],
-            twitterProfiles: [],
-            tiktokProfiles: []
-        };
+    async connectProfile(userId: string, role: string, token: string): Promise<boolean> {
 
-        // Create a new user entity using the extracted user data
-        const userId: ObjectId = await createUser(userData);
+        const twitterProfile = await this.getProfile(token);
 
-        return userId;
+        const connected = this.twitterRepo.connectProfile(userId, role, twitterProfile);
+
+        return connected;
+    }
+
+    async getUserAccount(token: string): Promise<any> {
+        try {
+            console.log('TwitterService initialized');
+
+            const response: AxiosResponse<any> = await axios.get(`${FACEBOOK_GRAPH_API_BASE_URL}/me`, {
+                params: {
+                    access_token: token,
+                    fields: 'id,first_name,middle_name,last_name,gender,age_range,birthday,email,link,location,about,languages,political,website,picture,short_name',
+                },
+            });
+
+            if (response.status !== 200 || !response.data) {
+                throw new Error('Failed to fetch user data from Twitter API');
+            }
+
+            const userData: UserAccount = {
+                userId: new ObjectId().toString(),
+                username: response.data?.email || '',
+                password: '',
+                emailId: response.data?.email || '',
+                signedUpMethod: 'twitter',
+                role: ''
+            };
+
+            return userData;
+        } catch (error) {
+            console.error('Error in fetchUserAndSave:', error);
+            return null;
+        }
+    }
+
+    async getProfile(token: string): Promise<TwitterProfile> {
+        try {
+
+            const response: AxiosResponse<any> = await axios.get(`${FACEBOOK_GRAPH_API_BASE_URL}/me`, {
+                params: {
+                    access_token: token,
+                    fields: 'id,first_name,middle_name,last_name,gender,age_range,birthday,email,link,location,about,languages,political,website,picture,short_name',
+                },
+            });
+
+            if (response.status !== 200 || !response.data) {
+                throw new Error('Failed to fetch user data from Twitter API');
+            }
+
+            const userFbData: TwitterProfile = {
+                twitterId: response.data?.id,
+                firstName: response.data?.first_name,
+                lastName: response.data?.last_name,
+                gender: response.data?.gender,
+                birthday: new Date(response.data?.birthday),
+                email: response.data?.email,
+                profileLink: response.data?.link,
+                location: response.data?.location?.name,
+                languages: (response.data?.languages || []).map((lang: { id: string; name: string }) => lang.name),
+                profilePicture: response.data?.picture?.data?.url,
+                shortName: response.data?.short_name,
+                middleName: response.data?.middle_name,
+                about: response.data?.about,
+                political: response.data?.political,
+                website: response.data?.website,
+            };
+
+            return userFbData;
+        } catch (error) {
+            console.error('Error in fetchUserAndSave:', error);
+            throw Error("Error while fetching twitter profile");
+        }
     }
 }

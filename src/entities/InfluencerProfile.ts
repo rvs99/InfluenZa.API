@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { FacebookProfile } from './FacebookProfile';
 import { InstagramProfile } from './InstagramProfile';
 import { TwitterProfile } from './TwitterProfile';
-import { TiktokProfile } from './TiktokProfile';
+import { TikTokProfile } from './TikTokProfile';
 import { LinkedInProfile } from './LinkedInProfile';
 import { YouTubeProfile } from './YoutubeProfile';
 
@@ -20,7 +20,7 @@ export interface influencerProfile {
     youtubeProfiles: YouTubeProfile[];
     linkedInProfiles: LinkedInProfile[];
     twitterProfiles: TwitterProfile[];
-    tiktokProfiles: TiktokProfile[];
+    tiktokProfiles: TikTokProfile[];
 }
 
 export default influencerProfile;

@@ -1,13 +1,22 @@
 import axios from 'axios';
-import { createUser } from '../../Repositories/Implementations/UserRepository';
-import { User } from '../../Entities/UserAccount';
+import { UserAccount } from '../../Entities/UserAccount';
 import { ObjectId } from 'mongodb';
 import { InstagramProfile } from '../../Entities/InstagramProfile';
+import { inject } from 'tsyringe';
+import { InstagramRepository } from '../../Repositories/Implementations/InstagramRepository';
 
 const INSTAGRAM_GRAPH_API_BASE_URL = 'https://graph.instagram.com';
 
 export class InstagramService {
+
+    private instagramRepository: InstagramRepository;
+
+    constructor(@inject('InstagramRepository') instagramRepository: InstagramRepository) {
+        this.instagramRepository = instagramRepository;
+    }
+
     async fetchUserAndSave(token: string): Promise<any> {
+
         const response = await axios.get(`${INSTAGRAM_GRAPH_API_BASE_URL}/me`, {
             params: {
                 access_token: token,
@@ -17,8 +26,9 @@ export class InstagramService {
         });
 
         // Extract user data from the Facebook API response
-        const userFbData: InstagramProfile = {
+        const userInstaProfile: InstagramProfile = {
             instaId: response.data?.id,
+            instaHandle: response.data?.instaHandle,
             firstName: response.data?.first_name,
             lastName: response.data?.last_name,
             gender: response.data?.gender,
@@ -35,21 +45,18 @@ export class InstagramService {
             website: response.data?.website
         };
 
-        const userData: User = {
-            id: new ObjectId(),
-            name: response.data?.first_name,
+        const userData: UserAccount = {
+            userId: (new ObjectId()).toString(),
             password: '',
-            email: response.data?.email,
+            emailId: response.data?.email,
             signedUpMethod: 'instagram',
-            facebookProfiles: [userFbData],
-            instagramProfiles: [],
-            twitterProfiles: [],
-            tiktokProfiles: []
+            username: "",
+            role: ""
         };
 
         // Create a new user entity using the extracted user data
-        const userId: ObjectId = await createUser(userData);
+        const success: boolean = await this.instagramRepository.connectProfile(userData.userId, userData.role, userInstaProfile);
 
-        return userId;
+        return success;
     }
 }
