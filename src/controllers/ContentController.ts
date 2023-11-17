@@ -15,7 +15,9 @@ export class ContentController {
 
             var content: Content | null = req.body.content;
 
-            const createdContent = await this.contentManagementService.createContent(content);
+            var userId = req['loggedInUser'].userId;
+
+            const createdContent = await this.contentManagementService.createContent(userId, content);
 
             if (createdContent) {
                 res.status(200).json("Content created!");

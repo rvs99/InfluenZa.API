@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { TikTokProfile } from "../../Entities/TiktokProfile";
+import { TikTokProfile } from "../../Entities/TikTokProfile";
 import { DataRepository } from "./DataRepository";
 import InfluencerProfile from "../../Entities/InfluencerProfile";
 import { Collection } from "mongodb";

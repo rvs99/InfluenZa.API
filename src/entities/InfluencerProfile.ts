@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { FacebookProfile } from './FacebookProfile';
 import { InstagramProfile } from './InstagramProfile';
 import { TwitterProfile } from './TwitterProfile';
-import { TikTokProfile } from './TiktokProfile';
+import { TikTokProfile } from './TikTokProfile';
 import { LinkedInProfile } from './LinkedInProfile';
 import { YouTubeProfile } from './YoutubeProfile';
 

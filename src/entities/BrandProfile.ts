@@ -1,7 +1,7 @@
 import { FacebookProfile } from './FacebookProfile';
 import { InstagramProfile } from './InstagramProfile';
 import { TwitterProfile } from './TwitterProfile';
-import { TikTokProfile } from './TiktokProfile';
+import { TikTokProfile } from './TikTokProfile';
 
 export interface BrandProfile {
     brandId: string;
