@@ -1,6 +1,8 @@
+import { autoInjectable } from 'tsyringe';
 import ConnectionPoolManager from './ConnectionPoolManager';
-import { Collection, MongoClient } from 'mongodb';
+import { Collection } from 'mongodb';
 
+@autoInjectable()
 export class DataRepository {
     private connectionManager: typeof ConnectionPoolManager; // Use typeof
     private readonly dbName = 'InfluenZa';
@@ -10,6 +12,7 @@ export class DataRepository {
     }
 
     async getDataCollection<T>(collectionName: string): Promise<Collection<T>> {
+
         const connection = await this.connectionManager.acquireConnection();
         const db = connection.client.db(this.dbName);
         const collection = db.collection<T>(collectionName);

@@ -3,14 +3,20 @@ import { UserAccount } from '../../Entities/UserAccount';
 import { UserRepository } from '../../Repositories/Implementations/UserRepository';
 import { FacebookService } from './FacebookService';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { injectable } from 'tsyringe';
+import { autoInjectable } from 'tsyringe';
 import { FacebookProfile } from '../../Entities/FacebookProfile';
 const fs = require('fs');
 
-@injectable()
+@autoInjectable()
 export class UserService {
 
-    constructor(private readonly userRepository: UserRepository, private readonly facebookService: FacebookService) { }
+    private readonly userRepository: UserRepository;
+    private readonly facebookService: FacebookService;
+
+    constructor(userRepository: UserRepository, facebookService: FacebookService) {
+        this.userRepository = userRepository;
+        this.facebookService = facebookService;
+    }
 
     async verifyCredentials(emailId: string, password: string): Promise<any> {
 
@@ -31,6 +37,7 @@ export class UserService {
     }
 
     async getUser(userId: string): Promise<UserAccount> {
+
         const existingUser = await this.userRepository.getUserByUserId(userId);
 
         if (existingUser == null) {
@@ -40,13 +47,27 @@ export class UserService {
         return existingUser;
     };
 
+    async registerUserAccountWithBasicDetails(userAccount: UserAccount): Promise<any> {
+
+        if (userAccount == null) {
+            return {
+                id: undefined,
+                status: "user details not found"
+            };
+        }
+
+        const userStatus = await this.userRepository.createUserWithBasicDetails(userAccount);
+
+        return userStatus;
+    }
+
     async registerUserAccountFromFacebook(facebookToken: string, role: string): Promise<any> {
 
         const facebookProfile: FacebookProfile = await this.facebookService.getProfile(facebookToken);
 
         if (facebookProfile != null) {
 
-            const userStatus = await this.userRepository.createUser(facebookProfile, role);
+            const userStatus = await this.userRepository.createUserWithFacebook(facebookProfile, role);
 
             return userStatus;
         }

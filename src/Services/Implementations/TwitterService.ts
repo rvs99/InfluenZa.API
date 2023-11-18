@@ -3,14 +3,18 @@ import { UserAccount } from '../../Entities/UserAccount';
 import { TwitterProfile } from '../../Entities/TwitterProfile';
 import { ObjectId } from 'mongodb';
 import { TwitterRepository } from '../../Repositories/Implementations/TwitterRepository';
-import { injectable } from 'tsyringe';
+import { autoInjectable } from 'tsyringe';
 
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.twitter.com';
 
-@injectable()
+@autoInjectable()
 export class TwitterService {
 
-    constructor(private readonly twitterRepo: TwitterRepository) { }
+    private readonly twitterRepo: TwitterRepository;
+
+    constructor(twitterRepo: TwitterRepository) {
+        this.twitterRepo = twitterRepo;
+    }
 
     async connectProfile(userId: string, role: string, token: string): Promise<boolean> {
 

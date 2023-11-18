@@ -6,10 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cls && ts-node ./src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "nodemon --watch 'src/**/**/*.ts' --exec cls && ts-node ./src/app.ts"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rahul Sapkal",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.4.0",
@@ -20,8 +21,10 @@
     "express-sanitizer": "^1.0.6",
     "express-validator": "^7.0.1",
     "generic-pool": "^3.9.0",
+    "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.1",
     "mongodb": "5.7",
+    "nodemon": "^3.0.1",
     "reflect-metadata": "^0.1.13",
     "tsyringe": "^4.8.0"
   },

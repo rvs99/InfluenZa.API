@@ -1,9 +1,9 @@
-import { injectable } from "tsyringe";
+import { autoInjectable} from "tsyringe";
 import { ContentRepository } from "../../Repositories/Implementations/ContentRepository";
 import { Content } from "../../Entities/Content";
 import ContentState from "../../Entities/ContentState";
 
-@injectable()
+@autoInjectable()
 export class ContentManagementService {
 
     constructor(private readonly contentRepo: ContentRepository) { }

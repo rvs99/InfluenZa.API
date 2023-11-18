@@ -3,14 +3,18 @@ import { UserAccount } from '../../Entities/UserAccount';
 import { TikTokProfile } from '../../Entities/TikTokProfile';
 import { ObjectId } from 'mongodb';
 import { TikTokRepository } from '../../Repositories/Implementations/TikTokRepository';
-import { injectable } from 'tsyringe';
+import { autoInjectable, injectable } from 'tsyringe';
 
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.tikTok.com';
 
-@injectable()
+@autoInjectable()
 export class TikTokService {
 
-    constructor(private readonly tikTokRepo: TikTokRepository) { }
+    private readonly tikTokRepo: TikTokRepository;
+
+    constructor(tikTokRepo: TikTokRepository) {
+        this.tikTokRepo = tikTokRepo;
+    }
 
     async connectProfile(userId: string, role: string, token: string): Promise<boolean> {
 

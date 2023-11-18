@@ -3,14 +3,18 @@ import { UserAccount } from '../../Entities/UserAccount';
 import { FacebookProfile } from '../../Entities/FacebookProfile';
 import { ObjectId } from 'mongodb';
 import { FacebookRepository } from '../../Repositories/Implementations/FacebookRepository';
-import { injectable } from 'tsyringe';
+import { autoInjectable } from "tsyringe";
 
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com';
 
-@injectable()
+@autoInjectable()
 export class FacebookService {
 
-    constructor(private readonly facebookRepo: FacebookRepository) { }
+    private readonly facebookRepo: FacebookRepository;
+
+    constructor(facebookRepo: FacebookRepository) {
+        this.facebookRepo = facebookRepo;
+    }
 
     async connectProfile(userId: string, role: string, token: string): Promise<boolean> {
 
@@ -53,6 +57,8 @@ export class FacebookService {
     }
 
     async getProfile(token: string): Promise<FacebookProfile> {
+
+        console.log("Actual token: " + token);
         try {
 
             const response: AxiosResponse<any> = await axios.get(`${FACEBOOK_GRAPH_API_BASE_URL}/me`, {

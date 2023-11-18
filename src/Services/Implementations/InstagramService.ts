@@ -2,16 +2,17 @@ import axios from 'axios';
 import { UserAccount } from '../../Entities/UserAccount';
 import { ObjectId } from 'mongodb';
 import { InstagramProfile } from '../../Entities/InstagramProfile';
-import { inject } from 'tsyringe';
+import { autoInjectable } from "tsyringe";
 import { InstagramRepository } from '../../Repositories/Implementations/InstagramRepository';
 
 const INSTAGRAM_GRAPH_API_BASE_URL = 'https://graph.instagram.com';
 
+@autoInjectable()
 export class InstagramService {
 
     private instagramRepository: InstagramRepository;
 
-    constructor(@inject('InstagramRepository') instagramRepository: InstagramRepository) {
+    constructor(instagramRepository: InstagramRepository) {
         this.instagramRepository = instagramRepository;
     }
 
