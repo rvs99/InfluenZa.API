@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cls && ts-node ./src/app.ts",
+    "start": "clear && ts-node ./src/app.ts",
     "build": "tsc",
     "dev": "nodemon --watch 'src/**/**/*.ts' --exec cls && ts-node ./src/app.ts"
   },
