@@ -1,11 +1,11 @@
-import { inject, injectable } from "tsyringe";
+import { autoInjectable, inject } from "tsyringe";
 import { FacebookProfile } from "../../Entities/FacebookProfile";
 import { DataRepository } from "./DataRepository";
 import InfluencerProfile from "../../Entities/InfluencerProfile";
 import { Collection } from "mongodb";
 import BrandProfile from "../../Entities/BrandProfile";
 
-@injectable()
+@autoInjectable()
 export class FacebookRepository {
 
     private influencerCollectionName = 'InfluencerProfiles';
@@ -16,7 +16,7 @@ export class FacebookRepository {
     private influencerProfileCollection: Promise<Collection<InfluencerProfile>>;
     private brandProfileCollection: Promise<Collection<BrandProfile>>;
 
-    constructor(@inject('DataRepository') dataService: DataRepository) {
+    constructor(dataService: DataRepository) {
         this.dataService = dataService;
         this.facebookProfileCollection = this.dataService.getDataCollection<FacebookProfile>(this.facebookProfileCollectionName);
         this.influencerProfileCollection = this.dataService.getDataCollection<InfluencerProfile>(this.influencerCollectionName);

@@ -1,14 +1,12 @@
 import { Collection, ObjectId } from 'mongodb';
 import { UserAccount } from '../../Entities/UserAccount';
-import { injectable } from 'tsyringe';
+import { autoInjectable } from 'tsyringe';
 import influencerProfile from '../../Entities/InfluencerProfile';
 import BrandProfile from '../../Entities/BrandProfile';
 import { FacebookProfile } from '../../Entities/FacebookProfile';
-
-import ConnectionPoolManager from './ConnectionPoolManager'
 import { DataRepository } from './DataRepository';
 
-@injectable()
+@autoInjectable()
 export class UserRepository {
 
     private userAccountCollectionPromise: Promise<Collection<UserAccount>>;
@@ -16,8 +14,8 @@ export class UserRepository {
     private brandCollectionPromise: Promise<Collection<BrandProfile>>;
     private dataService: DataRepository;
 
-    constructor() {
-        this.dataService = new DataRepository();
+    constructor(dataRepository: DataRepository) {
+        this.dataService = dataRepository;
         this.userAccountCollectionPromise = this.dataService.getDataCollection<UserAccount>('userAccounts');
         this.influencerCollectionPromise = this.dataService.getDataCollection<influencerProfile>('influencerProfiles');
         this.brandCollectionPromise = this.dataService.getDataCollection<BrandProfile>('brandProfiles');
@@ -35,7 +33,80 @@ export class UserRepository {
         return await this.brandCollectionPromise;
     }
 
-    public async createUser(facebookProfile: FacebookProfile, role: string): Promise<{ id?: string; status: string }> {
+    public async createUserWithBasicDetails(userAccount: UserAccount): Promise<{ id?: string; status: string }> {
+
+        const userAccountCollection = await this.getUserCollection();
+        const existingUser = await userAccountCollection.findOne<UserAccount>({ emailId: userAccount.emailId });
+
+        if (existingUser) {
+            return {
+                id: existingUser.userId,
+                status: "existing user"
+            };
+        }
+
+        const result = await userAccountCollection.insertOne(userAccount);
+
+        if (result.acknowledged) {
+            if (userAccount.role == 'Influencer') {
+
+                const influencerCollection = await this.getInfluencerCollection();
+
+                const influencerProfile: influencerProfile = {
+                    name: '',
+                    contact_email_id: userAccount.emailId,
+                    collaborationCount: 0,
+                    facebookProfiles: [],
+                    influencerId: userAccount.userId,
+                    description: '',
+                    contact_no: '',
+                    address: '',
+                    website: '',
+                    instagramProfiles: [],
+                    youtubeProfiles: [],
+                    linkedInProfiles: [],
+                    twitterProfiles: [],
+                    tiktokProfiles: []
+                }
+
+                influencerCollection.insertOne(influencerProfile)
+            }
+            else if (userAccount.role = 'Brand') {
+                const brandCollection = await this.getBrandCollection();
+
+                const brandProfile: BrandProfile = {
+                    brandId: userAccount.userId,
+                    name: '',
+                    description: '',
+                    contact_no: '',
+                    address: '',
+                    contact_email_id: userAccount.emailId,
+                    website: '',
+                    collaboration_count: 0,
+                    facebookProfiles: [],
+                    instagramProfiles: [],
+                    twitterProfiles: [],
+                    tiktokProfiles: []
+                }
+
+                brandCollection.insertOne(brandProfile);
+            }
+
+            return {
+                id: userAccount.userId,
+                status: "new user"
+            }
+        }
+        else {
+            return {
+                id: undefined,
+                status: "user error"
+            };
+        }
+
+    }
+
+    public async createUserWithFacebook(facebookProfile: FacebookProfile, role: string): Promise<{ id?: string; status: string }> {
 
         const userAccountCollection = await this.getUserCollection();
         const existingUser = await userAccountCollection.findOne<UserAccount>({ emailId: facebookProfile.email });
@@ -89,7 +160,6 @@ export class UserRepository {
                 const brandProfile: BrandProfile = {
                     brandId: userId,
                     name: facebookProfile.firstName + " " + facebookProfile.lastName,
-                    innfluenzaHandle: '',
                     description: '',
                     contact_no: '',
                     address: '',
@@ -128,8 +198,14 @@ export class UserRepository {
     }
 
     async getUserByUserId(userId: string): Promise<UserAccount | null> {
+        console.error("Begin Repo.getUser");
         const collection = await this.getUserCollection();
-        return await collection.findOne<UserAccount>({ userId: userId },
+
+        var user = await collection.findOne<UserAccount>({ userId: userId },
             { projection: { _id: 0, userId: 1, username: 1, emailId: 1, role: 1 } });
+
+        console.error("End Repo.getUser: User email id " + user.emailId);
+
+        return;
     }
 }

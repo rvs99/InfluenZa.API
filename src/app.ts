@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import express, { Request, Response, NextFunction } from 'express';
 import userRoutes from './Routes/UserRoutes'
 import facebookRoutes from './Routes/FacebookRoutes';
+import { StatusCodes } from 'http-status-codes';
 
 var cors = require('cors')
 
@@ -34,7 +35,7 @@ app.use('/facebook', facebookRoutes);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
-  res.status(500).json({ error: 'Internal Server Error occured' });
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error occured' });
 });
 
 app.listen(port, () => {

@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { FacebookProfile } from './FacebookProfile';
 import { InstagramProfile } from './InstagramProfile';
 import { TwitterProfile } from './TwitterProfile';

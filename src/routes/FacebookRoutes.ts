@@ -1,19 +1,17 @@
 import express from 'express';
-import { container } from '../ioc';
+import { container } from 'tsyringe';
 import { FacebookController } from '../Controllers/FacebookController';
-import { FacebookService } from '../Services/Implementations/FacebookService';
 import { check } from 'express-validator';
 import { TokenAuthMiddleware } from '../Middlewares/TokenAuthMiddleware';
 
 const router = express.Router();
 
-const facebookService = container.resolve(FacebookService);
-
-// Inject the FacebookService instance into UserController
-const facebookController = new FacebookController(facebookService);
+// Resolve all dependencies of FacebookController
+const facebookController = container.resolve(FacebookController);
+const tokenAuthMiddleware = container.resolve(TokenAuthMiddleware);
 
 router.post(
-    '/connect-profile', TokenAuthMiddleware,
+    '/connect-profile', tokenAuthMiddleware.authenticate,
     [
         check('facebookToken').notEmpty().withMessage('Facebook token is required.'),
     ],

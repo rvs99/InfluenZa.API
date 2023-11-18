@@ -1,5 +1,5 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
-import { createPool, Factory } from 'generic-pool';
+import { createPool } from 'generic-pool';
 
 class ConnectionPoolManager {
     private static instance: ConnectionPoolManager | null = null;

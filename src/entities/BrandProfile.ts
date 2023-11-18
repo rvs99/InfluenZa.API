@@ -5,7 +5,6 @@ import { TikTokProfile } from './TikTokProfile';
 
 export interface BrandProfile {
     brandId: string;
-    innfluenzaHandle: string,
     name: string;
     description: string;
     contact_no: string;

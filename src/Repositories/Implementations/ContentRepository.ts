@@ -1,11 +1,15 @@
-import { injectable } from "tsyringe";
+import { autoInjectable } from "tsyringe";
 import { DataRepository as DataRepository } from "./DataRepository";
 import { Content } from "../../Entities/Content";
 
-@injectable()
+@autoInjectable()
 export class ContentRepository {
 
-    constructor(private readonly dataService: DataRepository) { }
+    private readonly dataService: DataRepository;
+
+    constructor(dataService: DataRepository) {
+        this.dataService = dataService;
+    }
 
     async create(newContent: Content): Promise<string> {
         return "001";

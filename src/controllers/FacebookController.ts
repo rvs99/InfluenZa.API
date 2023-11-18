@@ -1,12 +1,15 @@
-import { container, injectable } from "tsyringe";
+import { autoInjectable } from "tsyringe";
 import { FacebookService } from "../Services/Implementations/FacebookService";
 import { Request, Response } from 'express';
+import { StatusCodes } from "http-status-codes";
 
-@injectable()
+@autoInjectable()
 export class FacebookController {
 
-    constructor(private readonly facebookService: FacebookService) {
-        this.facebookService = container.resolve(FacebookService);
+    private readonly facebookService: FacebookService
+
+    constructor(facebookService: FacebookService) {
+        this.facebookService = facebookService;
     }
 
     async connectProfile(req: Request, res: Response): Promise<void> {
@@ -20,11 +23,11 @@ export class FacebookController {
                 res.status(200).json("Facebook profile attached to Influencer!");
             }
             else {
-                res.status(500).json("Failed to attach Facebook profile to Influencer!");
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json("Failed to attach Facebook profile to Influencer!");
             }
         } catch (error) {
             console.error('Failed to connect Facebook profile:', error);
-            res.status(500).json({ error: 'Failed to connect Facebook profile' });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to connect Facebook profile' });
         }
     }
 }
